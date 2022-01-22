@@ -16,27 +16,10 @@ double* getVector(int N) {
 
 
 /**
- * Construct an Identity matrix as flattened array.
- * In memory, the rows are simply concatenated.
+ * Construct an Identity matrix.
+ * Memory is allocated row-wise.
  * @param N dimension of resulting matrix (NxN) 
 */
-// double* getIdentity(int N) {
-//     double* identity = (double*) malloc(N * N * sizeof(double)); // Allocate memory
-//     if(identity == NULL){
-//         printf("Allocating %ld Bytes failed. Aborting.", N * N * sizeof(double));
-//         exit(1);
-//     }
-//     for(int i = 0; i < N; i++){
-//         for(int j = 0; j < N; j++){
-//             if (i == j) 
-//                 identity[i * N + j] = 1;    // Diagonal values
-//             else 
-//                 identity[i * N + j] = 0;    // All other values
-//         }
-//     }
-//     return identity;
-// }
-
 double** getIdentity(int N) {
     // Allocate memory
     double** identity = (double**) malloc(N * sizeof(double*)); // Allocate memory for pointers to rows
