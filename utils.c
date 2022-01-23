@@ -116,13 +116,13 @@ void runSanityCheck(multiply_t multiply){
 
 
 /**
- * Runs the actual benchmark.
+ * Runs the actual benchmark. Reads dimension and number of iterations from ENV vars.
  * @param multiply Function pointer to function with interface as defined in 'multiply_t'
 */
 int runBenchmark(multiply_t multiply){
-    // Constants
-    const int N = 100000;
-    const int nIterations = 10;
+    // Load constants from env variables
+    const int N = atoi(getenv("BENCHMARK_N"));
+    const int nIterations = atoi(getenv("BENCHMARK_N_ITERATIONS"));
 
     // Construct Data
     double** identity = getIdentity(N);
@@ -151,6 +151,7 @@ int runBenchmark(multiply_t multiply){
     double time;
     char* approachName;
     int nThreads; 
+
     if (approach == baseline) {
         time = (clock() - start) / (double) CLOCKS_PER_SEC;
         approachName = "baseline";
