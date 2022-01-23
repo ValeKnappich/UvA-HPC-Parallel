@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include "utils.h"
 
 
 /**
@@ -76,6 +77,13 @@ void printMatrix(double** matrix, int N, int M){
     printf("\n");
 }
 
+
+/**
+ * Print a formatted vector.
+ * E.g. [1.00 2.00 3.00 4.00 5.00]
+ * @param vector Vector to print
+ * @param N Length of the vector
+*/
 void printVector(double* vector, int N){
     printf("[");
     for (int i = 0; i < N; i++){
@@ -83,4 +91,19 @@ void printVector(double* vector, int N){
         if (i != N - 1) printf(" "); // add space separator unless after last value of row
     }
     printf("]\n");
+}
+
+
+void runSanityCheck(multiply_t multiply){
+    // Sanity Check to see if multiplication works
+    double** testMatrix = getIdentity(5);
+    double* testVector = getVector(5);
+    printf("Sanity Check: \n");
+    printf("Matrix: \n");
+    printMatrix(testMatrix, 5, 5);
+    printf("Vector: \n");
+    printVector(testVector, 5);
+    printf("Product: \n");
+    double* testResult = multiply(testMatrix, testVector, 5);
+    printVector(testResult, 5);
 }
