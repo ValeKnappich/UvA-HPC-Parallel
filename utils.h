@@ -9,3 +9,10 @@ void printVector(double* vector, int N);
 typedef double* (multiply_t)(double**, double*, const long);
 
 void runSanityCheck(multiply_t);
+
+int runBenchmark(multiply_t multiply);
+
+enum approach_t {
+    baseline,
+    omp
+} approach;

@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <omp.h>
 #include <string.h> // for memcpy
@@ -29,24 +28,7 @@ double* multiply(double** matrix, double* vector, const long N){
 
 int main() {
     runSanityCheck(multiply);
-
-    // Constants
-    const int N = 100000;
-    const int nIterations = 10;
-
-    // Construct Data
-    double** identity = getIdentity(N);
-    double* vector = getVector(N);
-
-    // Benchmark multiple iterations
-    const double start = omp_get_wtime();
-    for (int i = 0; i < nIterations; i++) {
-        double* newVector = multiply(identity, vector, N);
-        free(vector);   // Avoid memory leaks, since a new result vector is allocated in multiply
-        vector = newVector;
-    }
-    const double end = omp_get_wtime();
-    printf("Ran %d iterations of 'omp' with rank %d in %.2f seconds using %d threads\n", 
-           nIterations, N, end - start, omp_get_max_threads());
+    approach = omp;
+    return runBenchmark(multiply);    
 }
 

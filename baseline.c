@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "utils.h"
 
 
@@ -25,26 +23,6 @@ double* multiply(double** matrix, double* vector, const long N){
 
 int main() {
     runSanityCheck(multiply);
-
-    // Constants
-    const int N = 100000;
-    const int nIterations = 10;
-
-    // Construct Data
-    double** identity = getIdentity(N);
-    double* vector = getVector(N);
-
-    // Benchmark multiple iterations
-    time_t start, end;
-    start = clock();
-
-    for (int i = 0; i < nIterations; i++) {
-        double* newVector = multiply(identity, vector, N);
-        free(vector);   // Avoid memory leaks, since a new result vector is allocated in multiply
-        vector = newVector;
-    }
-
-    end = clock();
-    printf("Ran %d iterations of 'baseline' with rank %d in %.2f seconds\n", 
-           nIterations, N, (end - start) / (double) CLOCKS_PER_SEC);
+    approach = baseline; 
+    return runBenchmark(multiply);
 }

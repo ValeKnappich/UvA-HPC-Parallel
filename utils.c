@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <omp.h>
+#include <time.h>
 #include "utils.h"
 
 
@@ -94,6 +96,10 @@ void printVector(double* vector, int N){
 }
 
 
+/**
+ * Run a sanity check example of multiplying the identity matrix with a test vector.
+ * @param multiply Function pointer to function with interface as defined in 'multiply_t'
+*/
 void runSanityCheck(multiply_t multiply){
     // Sanity Check to see if multiplication works
     double** testMatrix = getIdentity(5);
@@ -106,4 +112,60 @@ void runSanityCheck(multiply_t multiply){
     printf("Product: \n");
     double* testResult = multiply(testMatrix, testVector, 5);
     printVector(testResult, 5);
+}
+
+
+/**
+ * Runs the actual benchmark.
+ * @param multiply Function pointer to function with interface as defined in 'multiply_t'
+*/
+int runBenchmark(multiply_t multiply){
+    // Constants
+    const int N = 100000;
+    const int nIterations = 10;
+
+    // Construct Data
+    double** identity = getIdentity(N);
+    double* vector = getVector(N);
+
+    // ---- Benchmark multiple iterations ----
+    // Measure start time
+    double start;
+    if (approach == baseline){
+        start = (double) clock();
+    } else if (approach == omp) {
+        start = omp_get_wtime();
+    } else {
+        printf("Approach %d not implemented", approach);
+        return 1;
+    }
+
+    // Run benchmark
+    for (int i = 0; i < nIterations; i++) {
+        double* newVector = multiply(identity, vector, N);
+        free(vector);   // Avoid memory leaks, since a new result vector is allocated in multiply
+        vector = newVector;
+    }
+
+    // Measure end time
+    double time;
+    char* approachName;
+    int nThreads; 
+    if (approach == baseline) {
+        time = (clock() - start) / (double) CLOCKS_PER_SEC;
+        approachName = "baseline";
+        nThreads = 1;
+    } else if (approach == omp) {
+        time = omp_get_wtime() - start;
+        approachName = "omp";
+        nThreads = omp_get_max_threads();
+    } else {
+        printf("Approach %d not implemented", approach);
+        return 1;
+    }
+
+    // Print results
+    printf("Ran %d iterations of '%s' with size %d in %.2f seconds on %d thread(s)\n", 
+           nIterations, approachName, N, time, nThreads);
+    return 0;
 }

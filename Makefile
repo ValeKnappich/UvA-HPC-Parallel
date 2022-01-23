@@ -6,10 +6,11 @@ SRC = utils.c baseline.c omp.c
 
 JUNK +=
 
-CFLAGS += -O3 -Wall -W --std=c11 -lm
-CXXFLAGS += -O3 -Wall -W --std=c++11 -lm -Wno-cast-function-type
-OMP_CFLAGS = $(CFLAGS) -fopenmp
-MPI_CFLAGS = $(CXXFLAGS) -lmpi
+# CFLAGS += -O3 -Wall -W --std=c11 -lm
+# CXXFLAGS += -O3 -Wall -W --std=c++11 -lm -Wno-cast-function-type
+# OMP_CFLAGS = $(CFLAGS) -fopenmp
+# MPI_CFLAGS = $(CXXFLAGS) -lmpi
+FLAGS += -O3 -Wall -W --std=c11 -lm -fopenmp
 
 help:
 	@echo "help\tShow this help text"
@@ -26,7 +27,7 @@ empty:
 	rm -rf $(JUNK) $(EXPENSIVE_JUNK)
 
 baseline: baseline.c utils.c
-	$(CC) $(CFLAGS) -o baseline utils.c baseline.c
+	$(CC) $(FLAGS) -o baseline utils.c baseline.c
 
 omp: omp.c utils.c
-	$(CC) $(OMP_CFLAGS) -o omp utils.c omp.c
+	$(CC) $(FLAGS) -o omp utils.c omp.c
