@@ -27,7 +27,7 @@ empty:
 	rm -rf $(JUNK) $(EXPENSIVE_JUNK)
 
 baseline: baseline.c utils.c
-	$(CC) $(FLAGS) -o baseline utils.c baseline.c
+	$(CC) $(FLAGS) -o bin/baseline utils.c baseline.c -g 
 
 omp: omp.c utils.c
-	$(CC) $(FLAGS) -o omp utils.c omp.c
+	$(CC) $(FLAGS) -o bin/omp utils.c omp.c -g

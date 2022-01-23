@@ -101,6 +101,7 @@ void printVector(double* vector, int N){
  * @param multiply Function pointer to function with interface as defined in 'multiply_t'
 */
 void runSanityCheck(multiply_t multiply){
+    printf("--------- Sanity Check ---------\n");
     // Sanity Check to see if multiplication works
     double** testMatrix = getIdentity(5);
     double* testVector = getVector(5);
@@ -112,6 +113,7 @@ void runSanityCheck(multiply_t multiply){
     printf("Product: \n");
     double* testResult = multiply(testMatrix, testVector, 5);
     printVector(testResult, 5);
+    printf("--------------------------------\n");
 }
 
 
@@ -123,6 +125,13 @@ int runBenchmark(multiply_t multiply){
     // Load constants from env variables
     const int N = atoi(getenv("BENCHMARK_N"));
     const int nIterations = atoi(getenv("BENCHMARK_N_ITERATIONS"));
+    if (!N){
+        printf("Couldnt find 'BENCHMARK_N' in env variables.");
+        return 1;
+    } else if (!nIterations){
+        printf("Couldnt find 'BENCHMARK_N_ITERATIONS' in env variables.");
+        return 1;
+    }
 
     // Construct Data
     double** identity = getIdentity(N);
@@ -166,7 +175,9 @@ int runBenchmark(multiply_t multiply){
     }
 
     // Print results
-    printf("Ran %d iterations of '%s' with size %d in %.2f seconds on %d thread(s)\n", 
-           nIterations, approachName, N, time, nThreads);
+    printf("\n\n--------- Benchmark Results ---------\n");
+    printf("Approach: %s\nNumber of Iterations: %d\nDimensionality: %d\nNumber of Threads: %d\nExecution Time: %.2fs\n",
+            approachName, nIterations, N, nThreads, time);
+    printf("-------------------------------------");
     return 0;
 }
