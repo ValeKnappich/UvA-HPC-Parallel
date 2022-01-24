@@ -1,0 +1,5 @@
+#!/bin/bash
+
+module load 2021
+module load GCC/10.3.0
+gcc -fopenmp -o pi pi.c -lm
