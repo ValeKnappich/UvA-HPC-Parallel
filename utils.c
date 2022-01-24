@@ -19,25 +19,36 @@ double* getVector(int N) {
 
 
 /**
- * Construct an Identity matrix.
- * Memory is allocated row-wise.
- * @param N dimension of resulting matrix (NxN) 
+ * Allocate a square matrix
+ * @param N size of the matrix (NxN)
 */
-double** getIdentity(int N) {
-    // Allocate memory
-    double** identity = (double**) malloc(N * sizeof(double*)); // Allocate memory for pointers to rows
-    if(identity == NULL){
+double** allocateMatrix(int N){
+    double** matrix = (double**) malloc(N * sizeof(double*)); // Allocate memory for pointers to rows
+    if(matrix == NULL){
         printf("Allocating %ld Bytes failed. Aborting.", N * N * sizeof(double));
         exit(1);
     }
     for(int row = 0; row < N; row++){
-        identity[row] = malloc(N * sizeof(double));   // Allocate memory per row
-        if(identity == NULL){
+        matrix[row] = malloc(N * sizeof(double));   // Allocate memory per row
+        if(matrix == NULL){
             printf("Allocating %ld Bytes failed. Aborting.", N * sizeof(double));
             exit(1);
         }
     }
+    return matrix;
+}
 
+
+/**
+ * Construct an Identity matrix of type double.
+ * Memory is allocated row-wise.
+ * @param N dimension of resulting matrix (NxN) 
+*/
+double** getIdentityMatrix(int N) {
+    // Allocate memory
+    double** identity = allocateMatrix(N);
+
+    // Fill values in with 0s and 1s
     for(int i = 0; i < N; i++){
         for(int j = 0; j < N; j++){
             if (i == j) 
@@ -51,7 +62,29 @@ double** getIdentity(int N) {
 
 
 /**
- * Print a formatted Matrix
+ * Construct a random square matrix of type double.
+ * Memory is allocated row-wise.
+ * @param N dimension of resulting matrix (NxN) 
+*/
+double** getRandomMatrix(int N) {
+    // Allocate memory
+    double** matrix = allocateMatrix(N);
+
+    // Fill matrix with random values
+    #pragma omp parallel for
+    for(int i = 0; i < N; i++){
+        // create unique random seed per thread to avoid race conditions / deadlocks around global state of the PRNG
+        unsigned int seed = 42424242 + 42 * omp_get_thread_num();
+        for(int j = 0; j < N; j++){
+            matrix[i][j] = (double) rand_r(&seed) / (double) RAND_MAX * 100 - 50;  // Generate random doubles from -50 to 50
+        }
+    }
+    return matrix;
+}
+
+
+/**
+ * Print a formatted double matrix
  * 
  * Example Result from 5-identity
  * [[1 0 0 0 0]
@@ -103,7 +136,7 @@ void printVector(double* vector, int N){
 void runSanityCheck(multiply_t multiply){
     printf("--------- Sanity Check ---------\n");
     // Sanity Check to see if multiplication works
-    double** testMatrix = getIdentity(5);
+    double** testMatrix = getIdentityMatrix(5);
     double* testVector = getVector(5);
     printf("Sanity Check: \n");
     printf("Matrix: \n");
@@ -134,7 +167,7 @@ int runBenchmark(multiply_t multiply){
     }
 
     // Construct Data
-    double** identity = getIdentity(N);
+    double** matrix = getRandomMatrix(N);
     double* vector = getVector(N);
 
     // ---- Benchmark multiple iterations ----
@@ -148,19 +181,16 @@ int runBenchmark(multiply_t multiply){
         printf("Approach %d not implemented", approach);
         return 1;
     }
-
     // Run benchmark
     for (int i = 0; i < nIterations; i++) {
-        double* newVector = multiply(identity, vector, N);
+        double* newVector = multiply(matrix, vector, N);
         free(vector);   // Avoid memory leaks, since a new result vector is allocated in multiply
         vector = newVector;
     }
-
     // Measure end time
     double time;
     char* approachName;
     int nThreads; 
-
     if (approach == baseline) {
         time = (clock() - start) / (double) CLOCKS_PER_SEC;
         approachName = "baseline";

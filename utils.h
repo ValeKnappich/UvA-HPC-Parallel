@@ -1,6 +1,6 @@
 double* getVector(int N);
 
-double** getIdentity(int N);
+double** getIdentityMatrix(int N);
 
 void printMatrix(double** matrix, int N, int M);
 
