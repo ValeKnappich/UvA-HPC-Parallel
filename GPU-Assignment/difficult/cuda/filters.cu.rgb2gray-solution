@@ -1,0 +1,72 @@
+__global__ void rgb2grayCUDA(unsigned char *inputImage, unsigned char *grayImage, const int width, const int height) {
+	unsigned int y = blockIdx.y;
+	unsigned int x = (blockIdx.x * blockDim.x) + threadIdx.x;
+	float grayPix = 0.0f;
+	float r = 0.0f;
+	float g = 0.0f;
+	float b = 0.0f;
+
+	if ( x < width ) {
+		r = static_cast< float >(inputImage[(y * width) + x]);
+		grayPix = (0.3f * r);
+		g = static_cast< float >(inputImage[(width * height) + (y * width) + x]);
+		grayPix	+= (0.59f * g);
+		b = static_cast< float >(inputImage[(2 * width * height) + (y * width) + x]);
+		grayPix += (0.11f * b);
+
+		grayImage[(y * width) + x] = static_cast< unsigned char >(grayPix);
+	}
+}
+
+void rgb2gray(unsigned char *inputImage, unsigned char *grayImage, const int width, const int height, NSTimer &timer) {
+	cudaError_t devRetVal = cudaSuccess;
+	void *inputImage_d = 0;
+	void *grayImage_d = 0;
+	NSTimer kernelTime = NSTimer("kernelTime", false, false);
+	NSTimer memoryTime = NSTimer("memoryTime", false, false);
+
+	// Allocate device memory
+	if ( (devRetVal = cudaMalloc(reinterpret_cast< void ** >(&inputImage_d), width * height * 3 * sizeof(unsigned char))) != cudaSuccess ) {
+		cerr << "Impossible to allocate device memory for inputImage_d." << endl;
+		return;
+	}
+	if ( (devRetVal = cudaMalloc(reinterpret_cast< void ** >(&grayImage_d), width * height * sizeof(unsigned char))) != cudaSuccess ) {
+		cerr << "Impossible to allocate device memory for grayImage_d." << endl;
+		return;
+	}
+	// Copy input to device
+	memoryTime.start();
+	if ( (devRetVal = cudaMemcpy(inputImage_d, reinterpret_cast< void * >(inputImage), width * height * 3 * sizeof(unsigned char), cudaMemcpyHostToDevice)) != cudaSuccess ) {
+		cerr << "Impossible to copy inputImage_d to device." << endl;
+		return;
+	}
+	memoryTime.stop();
+	timer.stop();
+	if ( (devRetVal = cudaMemset(grayImage_d, 0, width * height * sizeof(unsigned char))) != cudaSuccess ) {
+		cerr << "Impossible to clean grayImage_d." << endl;
+		return;
+	}
+	timer.start();
+
+	
+	dim3 gridSize = dim3(static_cast< unsigned int >(ceil(width / static_cast< float >(nrThreads))), height);
+	dim3 blockSize = dim3(nrThreads);
+	kernelTime.start();
+	rgb2grayCUDA<<< gridSize, blockSize >>>(reinterpret_cast< unsigned char * >(inputImage_d), reinterpret_cast< unsigned char * >(grayImage_d), width, height);
+	cudaDeviceSynchronize();
+	kernelTime.stop();
+
+	// Copy back to host
+	timer.stop();
+	if ( (devRetVal = cudaMemcpy(reinterpret_cast< void * >(grayImage), grayImage_d, width * height * sizeof(unsigned char), cudaMemcpyDeviceToHost)) != cudaSuccess ) {
+		cerr << "Impossible to copy grayImage_d to host." << endl;
+		return;
+	}
+	cudaFree(inputImage_d);
+	cudaFree(grayImage_d);
+	timer.start();
+
+	cout << fixed << setprecision(6);
+	cout << "rgb2gray (kernel): \t\t" << kernelTime.getElapsed() << " seconds." << endl;
+	cout << "rgb2gray (memory): \t\t" << memoryTime.getElapsed() << " seconds." << endl;
+}

@@ -1,0 +1,35 @@
+Adding two vectors of 256 integer elements.
+vector-add (seq):    		1us
+vector-add (H2D):    		36us
+vector-add (kernel): 		22us
+vector-add (D2H):    		16us
+results OK!
+
+Adding two vectors of 1024 integer elements.
+vector-add (seq):    		1us
+vector-add (H2D):    		63us
+vector-add (kernel): 		33us
+vector-add (D2H):    		27us
+results OK!
+
+Adding two vectors of 65536 integer elements.
+vector-add (seq):    		422us
+vector-add (H2D):    		196us
+vector-add (kernel): 		37us
+vector-add (D2H):    		310us
+results OK!
+
+Adding two vectors of 655360 integer elements.
+vector-add (seq):    		1563us
+vector-add (H2D):    		1449us
+vector-add (kernel): 		71us
+vector-add (D2H):    		2851us
+results OK!
+
+Adding two vectors of 1000000 integer elements.
+vector-add (seq):    		3275us
+vector-add (H2D):    		2225us
+vector-add (kernel): 		110us
+vector-add (D2H):    		4485us
+error in results! Element 999936 is 0, but should be 1.99987e+06
+
