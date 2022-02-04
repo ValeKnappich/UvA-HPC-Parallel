@@ -1,0 +1,5 @@
+Iteratively transform vector A with vector B of 655360 integer elements.
+vector-transform (sequential): 		  = 0.00729431 seconds
+vector-transform (kernel): 		  = 0.000159857 seconds
+vector-transform (memory): 		  = 0.00384533 seconds
+error in results! Element 168 is 14112, but should be 14112

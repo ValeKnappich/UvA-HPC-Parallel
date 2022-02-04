@@ -1,0 +1,35 @@
+Iteratively transform vector A with vector B of 256 integer elements.
+vector-add (seq):    		3us
+vector-add (H2D):    		61us
+vector-add (kernel): 		36us
+vector-add (D2H):    		26us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
+Iteratively transform vector A with vector B of 1024 integer elements.
+vector-add (seq):    		20us
+vector-add (H2D):    		32us
+vector-add (kernel): 		28us
+vector-add (D2H):    		17us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
+Iteratively transform vector A with vector B of 65536 integer elements.
+vector-add (seq):    		824us
+vector-add (H2D):    		214us
+vector-add (kernel): 		33us
+vector-add (D2H):    		102us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
+Iteratively transform vector A with vector B of 655360 integer elements.
+vector-add (seq):    		6080us
+vector-add (H2D):    		1401us
+vector-add (kernel): 		90us
+vector-add (D2H):    		794us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
+Iteratively transform vector A with vector B of 1000000 integer elements.
+vector-add (seq):    		9420us
+vector-add (H2D):    		2815us
+vector-add (kernel): 		129us
+vector-add (D2H):    		1475us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
