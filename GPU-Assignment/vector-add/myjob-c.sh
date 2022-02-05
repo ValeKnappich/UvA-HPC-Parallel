@@ -6,6 +6,10 @@
 #SBATCH --mem=100000M
 
 export VECTOR_ADD_N=655360
-export VECTOR_ADD_BLOCK_SIZE=512
 
-./vector-add
+for blocksize in 64 128 256 512 1024
+do
+    export VECTOR_ADD_BLOCK_SIZE=$blocksize
+    ./vector-add
+    echo
+done

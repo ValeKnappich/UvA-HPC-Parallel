@@ -24,20 +24,13 @@ static void checkCudaCall(cudaError_t result) {
     }
 }
 
-__global__ void vectorAddKernel(float* A, float* B, float* Result) {
+__global__ void vectorAddKernel(float* A, float* B, float* Result, int n) {
     // insert operation here
     int i = threadIdx.x + blockDim.x * blockIdx.x;
-    Result[i] = A[i] + B[i];
+    if (i < n) Result[i] = A[i] / B[i];
 }
 
-void vectorAddCuda(int n, float* a, float* b, float* result) {
-    int threadBlockSize;
-
-    if (n < 512)
-        threadBlockSize = n;
-    else
-        threadBlockSize = 512;
-
+void vectorAddCuda(int n, float* a, float* b, float* result, int threadBlockSize) {
     // allocate the vectors on the GPU
     float* deviceA = NULL;
     checkCudaCall(cudaMalloc((void **) &deviceA, n * sizeof(float)));
@@ -70,7 +63,7 @@ void vectorAddCuda(int n, float* a, float* b, float* result) {
     high_resolution_clock::time_point t2 = high_resolution_clock::now();
 
     // execute kernel
-    vectorAddKernel<<<n/threadBlockSize, threadBlockSize>>>(deviceA, deviceB, deviceResult);
+    vectorAddKernel<<<n/threadBlockSize+1, threadBlockSize>>>(deviceA, deviceB, deviceResult, n);
     cudaDeviceSynchronize();
 
     // check whether the kernel invocation was successful
@@ -113,10 +106,9 @@ int main(int argc, char* argv[]) {
     float* b = new float[n];
     float* result = new float[n];
     float* result_s = new float[n];
+    int threadBlockSize = atoi(getenv("VECTOR_ADD_BLOCK_SIZE"));
 
-    if (argc > 1) n = atoi(argv[1]);
-
-    std::cout << "Adding two vectors of " << n << " integer elements." << std::endl;
+    std::cout << "Adding two vectors of " << n << " integer elements with threadBlocksize " << threadBlockSize << "." << std::endl;
 
     // initialize the vectors.
     for(int i=0; i<n; i++) {
@@ -125,7 +117,7 @@ int main(int argc, char* argv[]) {
     }
 
     vectorAddSeq(n, a, b, result_s);
-    vectorAddCuda(n, a, b, result);
+    vectorAddCuda(n, a, b, result, threadBlockSize);
 
     // verify the resuls
     for(int i=0; i<n; i++) {

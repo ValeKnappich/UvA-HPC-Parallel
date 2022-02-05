@@ -1,0 +1,27 @@
+Adding two vectors of 655360 integer elements with threadBlocksize 512.
+vector-add (seq):    		2694us
+vector-add (H2D):    		1450us
+vector-add (kernel): 		75us
+vector-add (D2H):    		1598us
+results OK!
+
+Substracting two vectors of 655360 integer elements with threadBlocksize 512.
+vector-add (seq):    		3086us
+vector-add (H2D):    		1442us
+vector-add (kernel): 		72us
+vector-add (D2H):    		1633us
+error in results! Element 1 is 0, but should be 2
+
+Multiplying two vectors of 655360 integer elements with threadBlocksize 512.
+vector-add (seq):    		1591us
+vector-add (H2D):    		1449us
+vector-add (kernel): 		74us
+vector-add (D2H):    		3030us
+error in results! Element 1 is 1, but should be 2
+
+Dividing two vectors of 655360 integer elements with threadBlocksize 512.
+vector-add (seq):    		2666us
+vector-add (H2D):    		1486us
+vector-add (kernel): 		75us
+vector-add (D2H):    		1734us
+error in results! Element 0 is nan, but should be 0
