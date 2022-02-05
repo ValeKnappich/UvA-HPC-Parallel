@@ -5,4 +5,9 @@
 #SBATCH --partition=gpu_shared_course
 #SBATCH --mem=100000M
 
-./vector-transform
+for n in 256 1024 65536 655360 1000000
+do
+    export VECTOR_ADD_N=$n
+    ./vector-transform
+    echo
+done

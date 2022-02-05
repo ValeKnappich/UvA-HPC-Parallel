@@ -1,0 +1,32 @@
+Iteratively transform vector A with vector B of 256 integer elements.
+vector-add (seq):    		2us
+cuda error: invalid configuration argument
+
+Iteratively transform vector A with vector B of 1024 integer elements.
+vector-add (seq):    		12us
+vector-add (H2D):    		32us
+vector-add (kernel): 		21us
+vector-add (D2H):    		16us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
+Iteratively transform vector A with vector B of 65536 integer elements.
+vector-add (seq):    		917us
+vector-add (H2D):    		194us
+vector-add (kernel): 		34us
+vector-add (D2H):    		103us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
+Iteratively transform vector A with vector B of 655360 integer elements.
+vector-add (seq):    		6079us
+vector-add (H2D):    		1424us
+vector-add (kernel): 		93us
+vector-add (D2H):    		783us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
+Iteratively transform vector A with vector B of 1000000 integer elements.
+vector-add (seq):    		9264us
+vector-add (H2D):    		2154us
+vector-add (kernel): 		129us
+vector-add (D2H):    		1139us
+error in results! Element 168 is 14111.998047, but should be 14112.000000
+
