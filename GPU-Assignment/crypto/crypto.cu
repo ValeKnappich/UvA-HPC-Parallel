@@ -7,6 +7,10 @@
 
 using namespace std;
 
+
+// const int key = 1; // = atoi(getenv("KEY"));
+
+
 /* Utility function, use to do error checking.
 
    Use this function like this:
@@ -27,12 +31,15 @@ static void checkCudaCall(cudaError_t result) {
 
 __global__ void encryptKernel(char* deviceDataIn, char* deviceDataOut) {
     unsigned index = blockIdx.x * blockDim.x + threadIdx.x;
-    deviceDataOut[index] = deviceDataIn[index];
+    int key = 1;
+    // std::cout << "encryptKernel key: " << std::to_string(key) << std::endl; 
+    deviceDataOut[index] = deviceDataIn[index] + key;
 }
 
 __global__ void decryptKernel(char* deviceDataIn, char* deviceDataOut) {
     unsigned index = blockIdx.x * blockDim.x + threadIdx.x;
-    deviceDataOut[index] = deviceDataIn[index];
+    int key = 1;
+    deviceDataOut[index] = deviceDataIn[index] - key;
 }
 
 int fileSize() {
@@ -86,11 +93,31 @@ int writeData(int size, char *fileName, char *data) {
 
 int EncryptSeq (int n, char* data_in, char* data_out) 
 {  
-  int i;
+  int i, key;
   timer sequentialTime = timer("Sequential encryption");
-  
+  key = 1;
+  char* ch;
   sequentialTime.start();
-  for (i=0; i<n; i++) { data_out[i]=data_in[i]; }
+  for (i=0; i<n; i++) { 
+    data_out[i]=data_in[i] + key; 
+
+    // ch = data_in[i];
+    // if(ch >= 'a' && ch <= 'z'){
+    //   ch = ch + key;
+    //   if(ch > 'z'){
+    //     ch = ch - 'z' + 'a' - 1;
+    //   }
+    //   data_out[i] = ch;
+    // }
+    // else if(ch >= 'A' && ch <= 'Z'){
+    //   ch = ch + key;
+    //   if(ch > 'Z'){
+    //     ch = ch - 'Z' + 'A' - 1;
+    //   }
+    //   data_out[i] = ch;
+    // }
+
+  }
   sequentialTime.stop();
 
   cout << fixed << setprecision(6);
@@ -101,11 +128,11 @@ int EncryptSeq (int n, char* data_in, char* data_out)
 
 int DecryptSeq (int n, char* data_in, char* data_out)
 {
-  int i;
+  int i, key;
   timer sequentialTime = timer("Sequential decryption");
-
+  key = 1;
   sequentialTime.start();
-  for (i=0; i<n; i++) { data_out[i]=data_in[i]; }
+  for (i=0; i<n; i++) { data_out[i]=data_in[i] - key; }
   sequentialTime.stop();
 
   cout << fixed << setprecision(6);
@@ -218,15 +245,18 @@ int DecryptCuda (int n, char* data_in, char* data_out) {
 int main(int argc, char* argv[]) {
     int n;
 
+    //key = 2;
+
     n = fileSize();
     if (n == -1) {
-	cout << "File not found! Exiting ... " << endl; 
-	exit(0);
+      cout << "File not found! Exiting ... " << endl; 
+      exit(0);
     }
 
     char* data_in = new char[n];
     char* data_out = new char[n];    
-    readData("original.data", data_in); 
+    //readData("original.data", data_in); 
+    readData("Text1.data", data_in); 
 
     cout << "Encrypting a file of " << n << " characters." << endl;
 
@@ -243,8 +273,40 @@ int main(int argc, char* argv[]) {
     DecryptCuda(n, data_in, data_out); 
     writeData(n, "recovered.data", data_out); 
  
+
+
+
+    // load decrypted data and compare results
+    char* data_seq = new char[n];
+    char* data_cuda = new char[n];
+    readData("sequential_decrypted.data", data_seq); 
+    readData("recovered.data", data_cuda);     
+
+    char* data_original = new char[n];
+    //readData("original.data", data_original); 
+    readData("Text1.data", data_original); 
+
+    // char difffe = diff(data_seq, data_cuda); // diff doesnt work
+
+    cout << "Compare decrypted files" << endl;
+    for (int i=0; i<n; i++) { 
+      if(data_seq[i] != data_cuda[i]) {
+          cout << "Files differ - i:" << i << " data_original[i]:" << data_original[i] << " data_seq[i]:" << data_seq[i] << " data_cuda[i]: " << data_cuda[i] << endl;
+      }
+    }
+
+    // load decrypted data and compare results
+    // char* data_seq = new char[n];
+    // char* data_cuda = new char[n];
+    // readData("sequential.data", data_seq); 
+    // readData("cuda.data", data_cuda); 
+
     delete[] data_in;
     delete[] data_out;
-    
+    delete[] data_seq;
+    delete[] data_cuda;
+    delete[] data_original;
+
+
     return 0;
 }

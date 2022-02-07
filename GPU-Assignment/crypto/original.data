@@ -173,7 +173,7 @@ int main(int argc, char* argv[]) {
     }
 
     char* data_in = new char[n];
-    char* data_out = new char[n];    
+    char* data_out = new char[n];
     readData("original.data", data_in); 
 
     cout << "Encrypting a file of " << n << " characters." << endl;
