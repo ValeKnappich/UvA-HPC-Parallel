@@ -1,0 +1,18 @@
+The entire file content is in memory.
+Encrypting a file of 31772 characters.
+Encryption (sequential): 		0.000305 seconds.
+The entire file content was written to file.
+Encrypt (kernel): 		0.000038 seconds.
+Encrypt (memory): 		0.000089 seconds.
+The entire file content was written to file.
+The entire file content is in memory.
+Decrypting a file of 31772characters
+Decryption (sequential): 		0.000158 seconds.
+The entire file content was written to file.
+Decrypt (kernel): 		0.000020 seconds.
+Decrypt (memory): 		0.000066 seconds.
+The entire file content was written to file.
+The entire file content is in memory.
+The entire file content is in memory.
+The entire file content is in memory.
+Compare decrypted files

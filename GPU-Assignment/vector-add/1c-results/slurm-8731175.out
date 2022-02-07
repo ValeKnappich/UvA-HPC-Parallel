@@ -1,0 +1,35 @@
+Adding two vectors of 655360 integer elements with threadBlocksize 64.
+vector-add (seq):    		2702us
+vector-add (H2D):    		1456us
+vector-add (kernel): 		76us
+vector-add (D2H):    		3039us
+results OK!
+
+Adding two vectors of 655360 integer elements with threadBlocksize 128.
+vector-add (seq):    		2718us
+vector-add (H2D):    		1461us
+vector-add (kernel): 		69us
+vector-add (D2H):    		2987us
+results OK!
+
+Adding two vectors of 655360 integer elements with threadBlocksize 256.
+vector-add (seq):    		1624us
+vector-add (H2D):    		1438us
+vector-add (kernel): 		67us
+vector-add (D2H):    		2982us
+results OK!
+
+Adding two vectors of 655360 integer elements with threadBlocksize 512.
+vector-add (seq):    		3176us
+vector-add (H2D):    		1461us
+vector-add (kernel): 		75us
+vector-add (D2H):    		1472us
+results OK!
+
+Adding two vectors of 655360 integer elements with threadBlocksize 1024.
+vector-add (seq):    		2737us
+vector-add (H2D):    		1446us
+vector-add (kernel): 		68us
+vector-add (D2H):    		3017us
+results OK!
+
