@@ -32,7 +32,6 @@ static void checkCudaCall(cudaError_t result) {
 __global__ void encryptKernel(char* deviceDataIn, char* deviceDataOut) {
     unsigned index = blockIdx.x * blockDim.x + threadIdx.x;
     int key = 1;
-    // std::cout << "encryptKernel key: " << std::to_string(key) << std::endl; 
     deviceDataOut[index] = deviceDataIn[index] + key;
 }
 
@@ -42,10 +41,11 @@ __global__ void decryptKernel(char* deviceDataIn, char* deviceDataOut) {
     deviceDataOut[index] = deviceDataIn[index] - key;
 }
 
-int fileSize() {
+int fileSize(char* data_name) {
   int size; 
 
-  ifstream file ("original.data", ios::in|ios::binary|ios::ate);
+  // ifstream file ("original.data", ios::in|ios::binary|ios::ate);
+  ifstream file (data_name, ios::in|ios::binary|ios::ate);
   if (file.is_open())
   {
     size = file.tellg();
@@ -170,7 +170,7 @@ int EncryptCuda (int n, char* data_in, char* data_out) {
 
     // execute kernel
     kernelTime1.start();
-    encryptKernel<<<n/threadBlockSize, threadBlockSize>>>(deviceDataIn, deviceDataOut);
+    encryptKernel<<<n/threadBlockSize+1, threadBlockSize>>>(deviceDataIn, deviceDataOut);
     cudaDeviceSynchronize();
     kernelTime1.stop();
 
@@ -220,7 +220,7 @@ int DecryptCuda (int n, char* data_in, char* data_out) {
 
     // execute kernel
     kernelTime1.start();
-    decryptKernel<<<n/threadBlockSize, threadBlockSize>>>(deviceDataIn, deviceDataOut);
+    decryptKernel<<<n/threadBlockSize+1, threadBlockSize>>>(deviceDataIn, deviceDataOut);
     cudaDeviceSynchronize();
     kernelTime1.stop();
 
@@ -246,8 +246,9 @@ int main(int argc, char* argv[]) {
     int n;
 
     //key = 2;
+    char* data_name = "text50000.data";
 
-    n = fileSize();
+    n = fileSize(data_name);
     if (n == -1) {
       cout << "File not found! Exiting ... " << endl; 
       exit(0);
@@ -255,8 +256,7 @@ int main(int argc, char* argv[]) {
 
     char* data_in = new char[n];
     char* data_out = new char[n];    
-    //readData("original.data", data_in); 
-    readData("Text1.data", data_in); 
+    readData(data_name, data_in); 
 
     cout << "Encrypting a file of " << n << " characters." << endl;
 
@@ -283,8 +283,7 @@ int main(int argc, char* argv[]) {
     readData("recovered.data", data_cuda);     
 
     char* data_original = new char[n];
-    //readData("original.data", data_original); 
-    readData("Text1.data", data_original); 
+    readData("original.data", data_original); 
 
     // char difffe = diff(data_seq, data_cuda); // diff doesnt work
 
