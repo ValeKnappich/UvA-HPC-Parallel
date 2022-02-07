@@ -63,26 +63,46 @@ __global__ void convolution_kernel_naive(float *output, float *input, float *fil
 
 
 __global__ void convolution_kernel(float *output, float *input, float *filter) {
+    int y = blockIdx.y * blockDim.y + threadIdx.y;
+    int x = blockIdx.x * blockDim.x + threadIdx.x;
+
     //declare shared memory for this thread block
     //the area reserved is equal to the thread block size plus
     //the size of the border needed for the computation
+    const int sizeX = block_size_x + filter_width - 1;
+    const int sizeY = block_size_y + filter_height - 1;
+    __shared__ float shInput[sizeX * sizeY];
 
     //Write a for loop that loads all values needed by this thread block
     //from global memory (input) and stores it into shared memory (sh_input)
     //that is local to this thread block
-    //for ( ... ) {
-        //for ( ... ) {
-            //...
-        //}
-    //}
+    for (int xi = -filter_width/2; xi < filter_width/2+1; xi++){
+        for (int yi = -filter_height/2; yi < filter_height/2+1; yi++){
+            int xShInput = threadIdx.x + xi;
+            int yShInput = threadIdx.y + yi;
+            if ((xShInput >= 0) && (xShInput < sizeX) && (yShInput >= 0) && (yShInput < sizeY)) {
+                int yInput = y + yi;
+                int xInput = x + xi;
+                if ((xInput >= 0) && (xInput < image_width) && (yInput >= 0) && (yInput < image_height))
+                    shInput[yShInput * sizeX + xShInput] = input[yInput * image_width + (xInput)];
+            }
+        }
+    }
 
     //synchronize to make all writes visible to all threads within the thread block
-    
+    __syncthreads();
+
     //compute using shared memory
-    
-    //store result in the global memory 
+    float sum = 0.0f;
+    for (int i = 0; i < filter_width; i++){
+        for (int j = 0; j < filter_height; j++){
+            float inputNumber = shInput[(threadIdx.y + j - filter_height/2) * sizeX + threadIdx.x + i - filter_width/2];
+            sum += inputNumber * filter[j * filter_width + i];
+        }
+    }
 
     //store result to global memory
+    output[y * image_width + x] = sum;
 }
 
 int main() {
